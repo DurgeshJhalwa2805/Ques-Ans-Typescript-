@@ -105,5 +105,43 @@ export const Wrapper = styled.div`
     font-weight: 500;
     font-size: 18px;
 }
+.singleRadDiv{
+    text-align: left;
+    border: 1px solid #dfdfdf;
+    padding: 8px 15px;
+}
+.disTitle{
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 5rem;
+    text-align: center;
+}
+.cont{
+    margin: 5px;
+    width: 100%;
+}
+.disQues{
+    margin:7px;
+    font-weight: 500;
+    text-transform: capitalize;
+    /* text-align: left; */
+    
+}
+.disAns{
+    margin:5px;
+    font-weight:400;
+    font-size: 16px;
+    text-transform: capitalize;
+}
+.container{
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+    padding: 10px 10px;
+}
+.labelCss{
+    margin-left: 5px;
+    font-size:17px;
+}
 
 `

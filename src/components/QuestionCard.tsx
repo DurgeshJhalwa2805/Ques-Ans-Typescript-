@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react"
 import { QuestionContext } from "../context/QuestionContext"
+import DisplayAns from "./DisplayAns"
 import SingleQuestion from "./SingleQuestion"
 
 
 const QuestionCard = () => {
-
+    // fetching data from context
     const questions = useContext(QuestionContext)
 
 
@@ -14,28 +15,32 @@ const QuestionCard = () => {
     const [number, setNumber] = useState(0);
     const [endGame, setEndGame] = useState<boolean>(false)
 
-
-
-    console.log(totalQues, "totalQues", endGame)
-
-
     // All Functions
+
+    // func when start clicked
     const startQues = () => {
         setStartPage(false)
         setNumber(1)
+        setTotalQues(questions.questions)
+        setEndGame(false)
     }
 
+    // func when next button clicked
     const nextQuestion = () => {
-
         if (number < totalQues.length) {
 
             setNumber(number + 1)
         } else {
             setEndGame(true)
         }
-
     }
 
+    // Submit func
+    const submitFunc = () => {
+        setEndGame(true)
+    }
+
+    // when previous button clicked
     const prevQuestion = () => {
         if (number > 1) {
             setNumber(number - 1)
@@ -43,16 +48,60 @@ const QuestionCard = () => {
 
 
     }
-    const updateAns = (e: any, questionNumber: number) => {
-        if (!endGame) {
-            let temp = [...totalQues]
-            let index = questionNumber - 1
-            let tempObj: any = temp[index]
-            tempObj.answer = e.target.value
-            temp.splice(index, 1, tempObj)
-            setTotalQues(temp)
 
-            console.log("update", e.target.value, questionNumber, temp)
+    const backBtnFunc = () => {
+        setStartPage(true)
+        setTotalQues(questions.questions)
+        setNumber(0)
+        setEndGame(false)
+    }
+
+    // when answer is changes this func runs
+    const updateAns = (e: any, questionNumber: number) => {
+
+        if (!endGame) {
+            // check wheter its checkbox event 
+            if (e.target.type == "checkbox") {
+                let temp = [...totalQues]
+                let index = questionNumber - 1
+                let tempObj: any = temp[index]
+                if (!tempObj.answer) {
+                    tempObj.answer = []
+                }
+
+                if (e.target.checked) {
+                    tempObj.answer.push(e.target.value)
+                } else {
+                    if (tempObj.answer.length > 0) {
+                        let tempArr = tempObj.answer.map((str: string) => {
+                            if (str !== e.target.value) {
+                                return str
+                            }
+                        })
+
+                        // to remove undefined element from array
+                        tempArr = tempArr.filter(function (element: any) {
+                            return element !== undefined;
+                        });
+                        tempObj.answer = tempArr
+
+                    }
+                }
+                // splicing to replace object
+                temp.splice(index, 1, tempObj)
+                setTotalQues(temp)
+
+
+            } else {
+                let temp = [...totalQues]
+                let index = questionNumber - 1
+                let tempObj: any = temp[index]
+                tempObj.answer = e.target.value
+
+                // splicing to replace object
+                temp.splice(index, 1, tempObj)
+                setTotalQues(temp)
+            }
 
         }
     }
@@ -61,18 +110,22 @@ const QuestionCard = () => {
 
     return (
         <>
+            {/* Routing can be used in this project but not used */}
             <div className='card'>
-                <div className="backBtn">
-                    <i className="fa fa-arrow-left" style={{ fontSize: "24px", cursor: "pointer" }} />
-                </div>
+                {!startPage && !endGame && <div className="backBtn" >
+                    <i className="fa fa-arrow-left" onClick={backBtnFunc} style={{ fontSize: "24px", cursor: "pointer" }} />
+                </div>}
                 <div className="centerCss">
+                    {/* Start Page */}
                     {
-                        startPage && <><h1 className="heading">Lets Start</h1>
+                        startPage && !endGame && <><h1 className="heading">Lets Start</h1>
                             <button className='btnCss btnStart' onClick={() => startQues()} >
                                 Start
                             </button></>
                     }
-                    {!startPage && <>
+
+                    {/* Question Page */}
+                    {!startPage && !endGame && <>
                         <>
                             {
                                 totalQues && Object.keys(totalQues).length > 0 &&
@@ -88,7 +141,7 @@ const QuestionCard = () => {
                                 <button className='btnCss prevBtn' onClick={prevQuestion}>
                                     Previous
                                 </button>
-                                {number == totalQues.length ? <button className='btnCss nextBtn' onClick={nextQuestion}>
+                                {number == totalQues.length ? <button className='btnCss nextBtn' onClick={submitFunc}>
                                     Submit
                                 </button> : <button className='btnCss nextBtn' onClick={nextQuestion}>
                                     Next
@@ -96,6 +149,14 @@ const QuestionCard = () => {
                             </div>
                         </>
                     </>
+                    }
+                    {/* Submit Page */}
+                    {endGame && <>
+                        <DisplayAns
+                            totalQues={totalQues}
+                        />
+                    </>
+
                     }
 
 

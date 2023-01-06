@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react"
-import { QuestionContext } from "../context/QuestionContext"
+import React from "react"
+
 
 
 interface Props {
@@ -9,19 +9,6 @@ interface Props {
 }
 
 const SingleQuestion: React.FC<Props> = ({ questionNumber, question, callBack }) => {
-
-    // console.log(questionNumber, typeof question, "props")
-
-    // All useStates
-    // const [startPage, setStartPage] = useState<boolean>(true);
-
-
-
-
-
-    // All Functions
-
-
 
 
     return (
@@ -33,13 +20,17 @@ const SingleQuestion: React.FC<Props> = ({ questionNumber, question, callBack })
                     </h6>
                 </div>
                 <div className="optionDiv">
+                    {/* checking and rendering according to input type */}
                     {question.questiontype.toLowerCase() == "radio" ? <>
                         {question.questionoption.map((item: any) => {
                             return (
                                 <>
-                                    <div className="singleRadDiv">
-                                        <input type="radio" name="radioBtn" onChange={(e) => callBack(e, questionNumber)} value={item.optionvalue} />
-                                        <label htmlFor="radioBtn">{item.optionvalue}</label>
+                                    <div key={item.optionid} className="singleRadDiv">
+                                        {question.answer ?
+                                            <input type="radio" defaultChecked={question?.answer.length > 0 && item.optionvalue == question.answer ? true : false} name="radioBtn" id={item.optionvalue} onChange={(e) => callBack(e, questionNumber)} value={item.optionvalue} /> :
+                                            <input type="radio" name="radioBtn" id={item.optionvalue} onChange={(e) => callBack(e, questionNumber)} value={item.optionvalue} />}
+
+                                        <label className="labelCss" htmlFor={item.optionvalue}>{item.optionvalue}</label>
                                     </div>
                                 </>
                             )
@@ -51,19 +42,28 @@ const SingleQuestion: React.FC<Props> = ({ questionNumber, question, callBack })
                             <>
                                 {question.questionoption.map((item: any) => {
                                     return (
-                                        <>
-                                            <input type="checkbox" id={`check${item.optionid}`} name={item.optionvalue} value={item.optionvalue} onChange={(e) => callBack(e, questionNumber)} />
-                                            <label htmlFor={item.optionvalue}>{item.optionvalue}</label>
-                                        </>
+                                        <div className="singleRadDiv">
+                                            {question.answer && question.answer.length > 0 ?
+                                                <input type="checkbox" id={`check${item.optionid}`} name={`name${item.optionid}`}
+                                                    onChange={(e) => callBack(e, questionNumber)} value={item.optionvalue}
+                                                    defaultChecked={question.answer.includes(item.optionvalue) ? true : false}
+                                                />
+                                                : <input type="checkbox" id={`check${item.optionid}`} name={`name${item.optionid}`}
+                                                    onChange={(e) => callBack(e, questionNumber)} value={item.optionvalue} />}
+                                            <label className="labelCss" htmlFor={`check${item.optionid}`}>{item.optionvalue}</label>
+                                        </div>
                                     )
                                 })
                                 }
                             </> : question.questiontype.toLowerCase() == "textarea" ?
-                                <>TextArea
-                                    <textarea id="textAreaQues" name="textAreaa" rows={4} cols={50} onChange={(e) => callBack(e, questionNumber)}></textarea>
+                                <>
+                                    <textarea id="textAreaQues"
+                                        value={question?.answer?.length > 0 ? question.answer : ""}
+                                        name="textAreaa" rows={4} cols={30} onChange={(e) => callBack(e, questionNumber)} />
                                 </> : <>
-                                    <input type="datetime-local" id="dateTime" name="dateTimeLocal" onChange={(e) => callBack(e, questionNumber)} />
-                                    Date</>
+
+                                    <input type="datetime-local" defaultValue={question?.answer?.length > 0 ? question.answer : ""} id="dateTime" name="dateTimeLocal" onChange={(e) => callBack(e, questionNumber)} />
+                                </>
                     }
                 </div>
 
